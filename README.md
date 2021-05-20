@@ -14,3 +14,22 @@ As of writing this, I have finished *Phase 3* and intend to publish the project 
 
 
 # **Phase 1: Extract**
+
+Excel has always been a great option for QuickBooks users who need a little more power behind their reporting. This first step took careful consideration, as many of these lists hold pieces of the same information, creating a risk of duplicate values. Though I didn't utilize several of them, the lists I exported were:
+
+
+- Customer/Vendor/Employee lists
+- Transaction lists for Invoices, Sales Receipts, Credit Memos, Refunds, Bills, Checks, Item Receipts, Credit Card Charges, Paychecks, and Purchase Orders
+- A couple lists only available as reports: Inventory, and the Chart of Accounts
+
+
+Until this point, my only SQL experience was through homework assignments in MySQL. With that sample database in mind, I attempted to clean the Excel data in a way that could expand and simplify the querying power. Through excessive use of randomization and vlookup functions, I unknowingly created a house of cards. With each variable added, I realized how the data's pre-existing relations meant it had to be reflected throughout.
+
+For example, the Invoices list provided only a name, date, and amount. Without the details of the Invoice (such as Products/Serviced sold), there was no way to connect them to the Income categories (via their ledger accounts) used in standard Profit/Sales reporting. Attempting to randomize the contents of the existing transactions would lead to large irregularities - like an invoice where the company sold 20 doors but only 2 hinges. Then, if doors and hinges were linked to separate income accounts, the value would be altered. An altered income value means the Balance Sheet will not balance... Every corner was a pitfall of inconsistencies and irreversible errors to the damage.
+
+
+**Though I came close to giving up in frustration, I instead chose to re-download the data and start from scratch. This time, I'd import everything into SQL Server *exactly* as it came, without adding even a single column. If the project was going to be a challenge, I'd rather the challenge be the querying - not needlessly complex Excel formulas.**
+
+
+
+# **Phase 2: Query**
