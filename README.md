@@ -18,9 +18,9 @@ As of writing this, I have finished *Phase 3* and intend to publish the project 
 Excel has always been a great option for QuickBooks users who need a little more power behind their reporting. This first step took careful consideration, as many of these lists hold pieces of the same information, creating a risk of duplicate values. Though I didn't utilize several of them, the lists I exported were:
 
 
-- Customer/Vendor/Employee lists
-- Transaction lists for Invoices, Sales Receipts, Credit Memos, Refunds, Bills, Checks, Item Receipts, Credit Card Charges, Paychecks, and Purchase Orders
-- A couple lists only available as reports: Inventory, and the Chart of Accounts
+- *Customer/Vendor/Employee lists*
+- *Transaction lists for Invoices, Sales Receipts, Credit Memos, Refunds, Bills, Checks, Item Receipts, Credit Card Charges, Paychecks, and Purchase Orders*
+- *A couple lists only available as reports: Inventory, and the Chart of Accounts*
 
 
 Until this point, my only SQL experience was through homework assignments in MySQL. With that sample database in mind, I attempted to clean the Excel data in a way that could expand and simplify the querying power. Through excessive use of randomization and vlookup functions, I unknowingly created a house of cards. With each variable added, I realized how the data's pre-existing relations meant it had to be reflected throughout.
