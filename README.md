@@ -181,9 +181,9 @@ END;
 ---
 ### ***Sales by Job***
 
-One of the biggest consequences to the 'no changes' approach of importing the QuickBooks data was the format in which the Customers and their Jobs were received. By default, it was 'Customer:Job', without any spaces. While Excel could have made quick work of that issue with *Find and Replace*, I could foresee lots of those aforementioned pitfalls down the road. 
+One of the biggest consequences to the 'no changes' approach of importing QuickBooks data was the format in which Customers and Jobs were received. By default, it was 'Customer:Job', without any spaces. While Excel could have made quick work of this with *Find and Replace*, I still foresaw lots of those aforementioned pitfalls down the road. 
 
-I started with the customer-based report that I perceived to be simpler, *Sales by Job* - since all sales transactions were assigned to Jobs and never the 'base' entity ('Customer' as opposed to 'Customer:Job'). As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both unioned tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
+Since all sales transactions were assigned to Jobs and never the base entity ('Customer' vs. 'Customer:Job'), I started with *Sales by Job* since I assumed it would be easier. As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both unioned tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
 
 ```
 {
@@ -234,7 +234,7 @@ END;
 ---
 ### ***Expenses by Vendor***
 
-Nothing new here. The FROM statement sub-query can hold as many unioned tables as needed, assuming they are the same format.
+Nothing new here. The FROM statement sub-query can hold as many unioned tables as is needed, assuming they are the same format.
 
 ```
 {
@@ -263,4 +263,78 @@ Nothing new here. The FROM statement sub-query can hold as many unioned tables a
 ```
 
 ---
-### ***Accounts Receivable Aging***
+### ***Accounts Receivable/Payable Aging***
+
+The Aging report was another that seemed simple in concept, but turned out particularly challenging. I felt certain that sub-queries were necessary to group any Invoices with an open balance into the standard 30-60-90 day periods. However, this created the same issue as the Sales reports: you can't always **GROUP BY** with sub-query results. Instead, the **CASE** function could be used within a **SUM** to collect values '**WHEN**' the Due Date fell in a certain range.
+
+The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivabble and Payable Aging* reports, this turned out to be '2027-01-01' - a coincidence that almost guranteed QuickBooks Developers entered the sample data around that date. Converting these procedures to using a current date is as simple as swapping out a single parameter.
+
+```
+{
+BEGIN
+	SELECT SUBSTRING(Customer, 0, CHARINDEX(':', Customer, 0)) AS Customer, --Substring 'Customer:Jobs' into base Customers to GROUP BY them
+
+		SUM(CASE --SUM Balance when parameter date is ON or BEFORE due date
+				WHEN Due_Date >= @BeginDate 
+				THEN Balance
+				ELSE NULL
+			END) AS [Current],
+
+		SUM(CASE --SUM Balance when Due Date is before parameter date but Due Date + 30 Days is greater than parameter date
+				WHEN Due_Date < @BeginDate 
+					AND DATEADD(DD, 30, Due_Date) > @BeginDate 
+				THEN Balance
+				ELSE NULL
+			END) AS [1 - 30],
+
+		SUM(CASE --SUM Balance when Due Date is between 31 and 60 Days greater than parameter date
+				WHEN DATEADD(DD, 31, Due_Date) < @BeginDate  
+					AND DATEADD(DD, 60, Due_Date) > @BeginDate 
+				THEN Balance
+				ELSE NULL
+			END) AS [31 - 60],
+
+		SUM(CASE --SUM Balance when Due Date is between 61 and 90 Days greater than parameter date
+				WHEN DATEADD(DD, 61, Due_Date) < @BeginDate 
+					AND DATEADD(DD, 90, Due_Date) > @BeginDate 
+				THEN Balance
+				ELSE NULL
+			END) AS [61 - 90],
+
+		SUM(CASE --SUM Balance when due date is more than 91 days greater than parameter date
+				WHEN DATEADD(DD, 91, Due_Date) < @BeginDate 
+				THEN Balance
+				ELSE NULL
+			END) AS [91+]
+
+	FROM Invoices
+	WHERE Balance IS NOT NULL --Ensuring customers with no balance do not appear
+	GROUP BY Customer
+END;
+}
+```
+
+Nothing changes for the Payable version of this report, it's simply *Bills* instead of *Invoices*.
+
+---
+### ***Inventory Valuation Detail***
+
+At last, short and simple query. Item 'Bundles' shared the same naming scheme as *Customers and Jobs*, but a simple LIKE paired with wildcard searching ('%') will do the trick here. As previously discussed, Inventory is the key to expanding the data's reportability. This procedure will surely be revisited once *Phase 4* is complete.
+
+
+```
+{
+BEGIN
+	SELECT Item, Quantity, (Quantity * Cost) AS [Asset Value]
+	FROM ItemList
+	WHERE Type = 'Inventory Part' AND Item LIKE '%:%' --LIKE to exclude Bundle Names
+END;
+}
+```
+
+---
+### ***Other***
+
+For the time being, only some simple Transaction Lists reside in the remaining procedures. They aren't worth discussing, as they were simply a large collection of various UNION statements. I wrote these while working on visualizations in *Phase 3* after gaining a better understanding of how Power BI and Tableau utilize data.
+
+# **Phase 3: Visualize**
