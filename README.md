@@ -36,4 +36,4 @@ For example, the Invoice list provided only a name, date, and amount. Without th
 
 For each of these queries, I'll discuss only the inputs, outputs, and respective 'obstacles' that served as valuable learning opportunities when writing them. To see the full code for each procedure, follow the project repository link at the top of the page.
 
-## *Profit and Loss*
+### *Profit and Loss*
