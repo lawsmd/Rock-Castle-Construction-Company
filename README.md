@@ -36,4 +36,34 @@ For example, the Invoice list provided only a name, date, and amount. Without th
 
 For each of these queries, I'll discuss only the inputs, outputs, and respective 'obstacles' that served as valuable learning opportunities when writing them. To see the full code for each procedure, follow the project repository link at the top of the page.
 
-### *Profit and Loss*
+
+
+### ***Profit and Loss***
+
+Those familiar with a typical *Profit and Loss* report might have already been concerned about the lack of a relationship between the sales transactions and their income categories. Until I can expand the data and create that relationship, the P&L is limited to the totals of Revenue transactions, Expense transactions, and their difference stated as 'Net Income'. For every report where it is helpful, there are 'From' and 'To' date parameters accepted as input variables.
+  
+The first obstacle arose when totaling Revenue and Expenses, which involved 8 different transaction types combined into two aliases with 4 SUM statements each. However, calculating Net Income using those aliases isn't possible within the same SELECT statement. For this, a **Common Table Expression** was used. This function creates a temporary result table which can be referenced only within the immediately proceeding statement.
+
+```
+{
+WITH Totals AS --CTE (Common Table Expression) so that each sub-query's alias can be used in the gross calculations below
+		(
+		SELECT
+			--Income Data, nulls converted to 0
+			(SELECT ISNULL(SUM(Amount), 0) FROM Invoices WHERE Date >= @FromDate AND Date <= @ToDate) AS Invoice_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM SalesReceipts WHERE Date >= @FromDate AND Date <= @ToDate) AS Sales_Receipt_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM CreditMemos WHERE Date >= @FromDate AND Date <= @ToDate) AS Credit_Memo_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM Refunds WHERE Date >= @FromDate AND Date <= @ToDate) AS Refund_Totals,
+
+			--Expense Data, nulls converted to 0
+			(SELECT ISNULL(SUM(Amount), 0) FROM Bills WHERE Date >= @FromDate AND Date <= @ToDate) AS Bill_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM Checks WHERE Date >= @FromDate AND Date <= @ToDate) AS Check_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM CreditCardCharges WHERE Date >= @FromDate AND Date <= @ToDate) AS Credit_Card_Charge_Totals,
+			(SELECT ISNULL(SUM(Amount), 0) FROM Paychecks WHERE Date >= @FromDate AND Date <= @ToDate) AS Paycheck_Totals
+		)
+}
+```
+
+Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be resued for the final Net calculation, it's still much cleaner code than adding the SUM of 8 sub-queries.
+
+### ***Profit and Loss By Customer***
