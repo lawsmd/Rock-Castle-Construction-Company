@@ -319,7 +319,7 @@ Nothing changes for the Payable version of this report, it's simply *Bills* inst
 ---
 ### ***Inventory Valuation Detail***
 
-At last, a short and simple query. Item 'Bundles' share the same naming scheme as *Customers and Jobs*, but a simple LIKE paired with wildcard searching ('%') will drop the extra weight here. As previously discussed, Inventory is the key to expanding the data's reportability. This procedure will surely be revisited once *Phase 4* is complete.
+At last, a short and simple query. Item 'Bundles' share the same naming scheme as *Customers and Jobs*, but a simple LIKE statement paired with wildcard searching ('%') will drop the extra weight here. As previously discussed, Inventory is the key to expanding the data's reportability. This procedure will surely be revisited once *Phase 4* is complete.
 
 
 ```
