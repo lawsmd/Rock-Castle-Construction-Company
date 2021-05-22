@@ -68,7 +68,7 @@ Thanks to this, I could calculate total Revenue and Expenses using simple arithm
 
 ### ***Profit and Loss By Customer***
 
-Not much changes here, only an input customer parameter searched for in each transaction list using the LIKE statement. As with many of these reports, their current usefulness is limited until data expansion. Even though it is quite capable of it, and a frequently used feature at that, QuickBooks did not have any Expenses tied to their Customers/Jobs - only Vendors. Therefore, each customer carries only Revenue and present time.
+Not much changes here, only an input customer parameter searched for in each transaction list using the LIKE statement. As with many of these reports, their current usefulness is limited until data expansion. Even though it is quite capable of it, and a frequently used feature at that, QuickBooks did not have any Expenses tied to their Customers/Jobs - only Vendors. Therefore, each customer carries only Revenue at present time.
 
 ```
 {
@@ -95,3 +95,52 @@ BEGIN
 ```
 
 ### ***Profit and Loss Comparison***
+
+This report compares the Profit and Loss of two separate periods. While I could have simply doubled the entirety of the original *Profit and Loss* procedure, I chose instead to learn about passing **Output Parameters** from Stored Procedures. To do this, I first had to create a 'Profit and Loss Output' procedure, which had several key differences to the report's base form:
+
+1. Declare the output parameters and their data types.
+2. Declare these parameters as variables within the statement itself.
+3. Calculate the totals into the variables instead of the aliases.
+4. SET the output parameters equal to those variables.
+
+Everything else about the P&L stays the same.
+
+```
+{
+CREATE PROCEDURE spProfitAndLossOutput --This procedure is only for outputting to other procedures which need the pre-calculated data (i.e. P&L Comparison)
+--Parameters for 'From' and 'To' dates of report period
+@FromDate date, 
+@ToDate date,
+--Output parameters to be passed into other procedures
+@Gross_Income FLOAT OUTPUT,
+@Total_Expenses FLOAT OUTPUT,
+@Net_Income FLOAT OUTPUT
+AS
+
+BEGIN
+	--Declaring variables for holding calculations to be passed to output parameters
+	DECLARE @gIncome FLOAT;
+	DECLARE @tExpenses FLOAT;
+	DECLARE @nIncome FLOAT;
+}
+```
+
+
+```
+{
+	--Three separate queries for passing calculations to output parameters
+	SELECT @gIncome = (Invoice_Totals + Sales_Receipt_Totals - Credit_Memo_Totals - Refund_Totals),
+			@tExpenses = (Bill_Totals + Check_Totals + Credit_Card_Charge_Totals + Paycheck_Totals),
+			@nIncome = ((Invoice_Totals + Sales_Receipt_Totals - Credit_Memo_Totals - Refund_Totals) - 
+						(Bill_Totals + Check_Totals + Credit_Card_Charge_Totals + Paycheck_Totals))
+	 FROM GrossTotals;
+
+	--Setting the final calculations to the output parameters
+	SET @Gross_Income = @gIncome;
+	SET @Total_Expenses = @tExpenses;
+	SET @Net_Income = @nIncome;
+END;
+}
+```
+
+### ***Sales by Job***
