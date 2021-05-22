@@ -65,6 +65,7 @@ WITH Totals AS --CTE (Common Table Expression) so that each sub-query's alias ca
 ```
 
 Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be resued for the final et calculation, it's still much simpler than adding the SUM of 8 sub-queries.
+
 ---
 ### ***Profit and Loss By Customer***
 
@@ -93,6 +94,7 @@ BEGIN
 		)
 }
 ```
+
 ---
 ### ***Profit and Loss Comparison***
 
@@ -175,6 +177,7 @@ BEGIN
 END;
 }
 ```
+
 ---
 ### ***Sales by Job***
 
