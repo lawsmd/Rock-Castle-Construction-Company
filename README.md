@@ -267,7 +267,7 @@ Nothing new here. The FROM statement sub-query can hold as many unioned tables a
 
 The Aging report was another that seemed simple in concept, but turned out particularly challenging. I felt certain that sub-queries were necessary to group any Invoices with an open balance into the standard 30-60-90 day periods. However, this created the same issue as the Sales reports: you can't always **GROUP BY** with sub-query results. Instead, the **CASE** function could be used within a **SUM** to collect values '**WHEN**' the Due Date fell in a certain range.
 
-The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivabble and Payable Aging* reports, this turned out to be '2027-01-01' - a coincidence that almost guranteed QuickBooks Developers entered the sample data around that date. Converting these procedures to using a current date is as simple as swapping out a single parameter.
+The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivabble and Payable Aging* reports, the best option turned out to be '2027-01-01' - a coincidence which almost guarantees that QuickBooks Developers entered the sample data around that date. Converting these procedures to use the current date is as simple as swapping out a single parameter.
 
 ```
 {
@@ -319,7 +319,7 @@ Nothing changes for the Payable version of this report, it's simply *Bills* inst
 ---
 ### ***Inventory Valuation Detail***
 
-At last, short and simple query. Item 'Bundles' shared the same naming scheme as *Customers and Jobs*, but a simple LIKE paired with wildcard searching ('%') will do the trick here. As previously discussed, Inventory is the key to expanding the data's reportability. This procedure will surely be revisited once *Phase 4* is complete.
+At last, a short and simple query. Item 'Bundles' share the same naming scheme as *Customers and Jobs*, but a simple LIKE paired with wildcard searching ('%') will drop the extra weight here. As previously discussed, Inventory is the key to expanding the data's reportability. This procedure will surely be revisited once *Phase 4* is complete.
 
 
 ```
