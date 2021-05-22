@@ -181,4 +181,86 @@ END;
 ---
 ### ***Sales by Job***
 
+One of the biggest consequences to the 'no changes' approach of importing the QuickBooks data was the format in which the Customers and their Jobs were received. By default, it was 'Customer:Job', without any spaces. While Excel could have made quick work of that issue with *Find and Replace*, I could foresee lots of those aforementioned pitfalls down the road. 
 
+I started with the customer-based report that I perceived to be simpler, *Sales by Job* - since all sales transactions were assigned to Jobs and never the 'base' entity ('Customer' as opposed to 'Customer:Job'). As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both unioned tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
+
+```
+{
+BEGIN
+	SELECT Customer, SUM(Sales) AS [Total Sales]
+
+	--Sub-query to UNION Invoices and Sales Receipt Amounts
+	FROM (
+		SELECT Invoices.Customer, SUM(Invoices.Amount) AS Sales
+		FROM Invoices
+		WHERE Invoices.Date >= @FromDate AND Invoices.Date <= @ToDate
+		GROUP BY Invoices.Customer
+
+		UNION
+
+		SELECT SalesReceipts.Customer, SUM(SalesReceipts.Amount) AS Sales
+		FROM SalesReceipts
+		WHERE SalesReceipts.Date >= @FromDate AND SalesReceipts.Date <= @ToDate
+		GROUP BY SalesReceipts.Customer
+	) AS Total_Sales
+
+	GROUP BY Total_Sales.Customer
+END;
+}
+```
+
+---
+### ***Sales by Customer***
+
+With that hurdle out of the way, a report on accumulative customer sales needed only one further trick: breaking 'Customer:Job' into base form. To begin, I used a **Temporary Table** to run and store the *Sales by Job* results. Using CHARINDEX, I could return the position of the ':' to a SUBSTRING function in the **Length** parameter. Since the string starts at position 0 but the value passed into Length must be positive, the *SUBSTRING* will always end one character short of the colon's position - providing the base customer every time.
+
+```
+{
+BEGIN
+	CREATE TABLE #TempSalesByJob (Customer nvarchar(255), Sales money) --Create a temp table (#) to hold Sales By Job
+	INSERT #TempSalesByJob EXECUTE spSalesByJob @FromDate, @ToDate --Insert procedure results into temp table
+
+	SELECT SUBSTRING(Customer, 0, CHARINDEX(':', Customer, 0)) AS Customer, --Substring to reduce Customer:Job(s) into just Customers
+		SUM(Sales) AS Sales 
+	FROM #TempSalesByJob
+	GROUP BY SUBSTRING(Customer, 0, CHARINDEX(':', Customer, 0))
+
+	DROP TABLE #TempSalesByJob --Always drop your temp tables!
+END;
+}
+```
+
+---
+### ***Expenses by Vendor***
+
+Nothing new here. The FROM statement sub-query can hold as many unioned tables as needed, assuming they are the same format.
+
+```
+{
+	--Sub-query to UNION Bills, Checks, and Credit Card Charges
+	FROM (
+		SELECT Bills.Vendor, SUM(Bills.Amount) AS Expenses
+		FROM Bills
+		WHERE Bills.Date >= @FromDate AND Bills.Date <= @ToDate
+		GROUP BY Bills.Vendor
+
+		UNION
+
+		SELECT Checks.Vendor, SUM(Checks.Amount) AS Expenses
+		FROM Checks
+		WHERE Checks.Date >= @FromDate AND Checks.Date <= @ToDate
+		GROUP BY Checks.Vendor
+
+		UNION
+
+		SELECT CreditCardCharges.Vendor, SUM(CreditCardCharges.Amount) AS Expenses
+		FROM CreditCardCharges
+		WHERE CreditCardCharges.Date >= @FromDate AND CreditCardCharges.Date <= @ToDate
+		GROUP BY CreditCardCharges.Vendor
+	) AS Total_Expenses
+}
+```
+
+---
+### ***Accounts Receivable Aging***
