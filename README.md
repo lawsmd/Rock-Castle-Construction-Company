@@ -65,7 +65,7 @@ WITH Totals AS --CTE (Common Table Expression) so that each sub-query's alias ca
 ```
 
 Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be resued for the final et calculation, it's still much simpler than adding the SUM of 8 sub-queries.
-
+---
 ### ***Profit and Loss By Customer***
 
 Not much changes here, only an input customer parameter searched for in each transaction list using the LIKE statement. As with many of these reports, their current usefulness is limited until data expansion. Even though it is quite capable of it, and a frequently used feature at that, QuickBooks did not have any Expenses tied to their Customers/Jobs - only Vendors. Therefore, each customer carries only Revenue at present time.
@@ -93,7 +93,7 @@ BEGIN
 		)
 }
 ```
-
+---
 ### ***Profit and Loss Comparison***
 
 This report compares the Profit and Loss of two separate periods. While I could have simply doubled the entirety of the original *Profit and Loss* procedure, I chose instead to learn about passing **Output Parameters** from Stored Procedures. To do this, I first had to create a 'Profit and Loss Output' procedure, which had several key differences to the report's base form:
@@ -112,14 +112,14 @@ CREATE PROCEDURE spProfitAndLossOutput --This procedure is only for outputting t
 @FromDate date, 
 @ToDate date,
 --Output parameters to be passed into other procedures
-@Gross_Income FLOAT OUTPUT,
+@Gross_Revenue FLOAT OUTPUT,
 @Total_Expenses FLOAT OUTPUT,
 @Net_Income FLOAT OUTPUT
 AS
 
 BEGIN
 	--Declaring variables for holding calculations to be passed to output parameters
-	DECLARE @gIncome FLOAT;
+	DECLARE @gRevenue FLOAT;
 	DECLARE @tExpenses FLOAT;
 	DECLARE @nIncome FLOAT;
 }
@@ -129,18 +129,53 @@ BEGIN
 ```
 {
 	--Three separate queries for passing calculations to output parameters
-	SELECT @gIncome = (Invoice_Totals + Sales_Receipt_Totals - Credit_Memo_Totals - Refund_Totals),
+	SELECT @gRevenue = (Invoice_Totals + Sales_Receipt_Totals - Credit_Memo_Totals - Refund_Totals),
 			@tExpenses = (Bill_Totals + Check_Totals + Credit_Card_Charge_Totals + Paycheck_Totals),
 			@nIncome = ((Invoice_Totals + Sales_Receipt_Totals - Credit_Memo_Totals - Refund_Totals) - 
 						(Bill_Totals + Check_Totals + Credit_Card_Charge_Totals + Paycheck_Totals))
 	 FROM GrossTotals;
 
 	--Setting the final calculations to the output parameters
-	SET @Gross_Income = @gIncome;
+	SET @Gross_Revenue = @gRevenue;
 	SET @Total_Expenses = @tExpenses;
 	SET @Net_Income = @nIncome;
 END;
 }
 ```
 
+With that output available, I needed only to declare 6 variables to receive it (3 for each period) and then execute the procedure twice. Then, the entire report is just a SELECT statement aliasing the variables.
+
+```
+{
+BEGIN
+	--Declaring variables to receive output from P&L Output Procedure
+	DECLARE @p1gR FLOAT --'Period 1, Gross Income' and so on...
+	DECLARE @p1tE FLOAT
+	DECLARE @p1nI FLOAT
+	DECLARE @p2gR FLOAT
+	DECLARE @p2tE FLOAT
+	DECLARE @p2nI FLOAT
+
+	EXECUTE spProfitAndLossOutput --Executing P&L Output Procedure for Period 1
+		@FromDate = @FromDate1,
+		@ToDate = @ToDate1,
+		@Gross_Income = @p1gR OUTPUT,
+		@Total_Expenses = @p1tE OUTPUT,
+		@Net_Income = @p1nI OUTPUT
+
+	EXECUTE spProfitAndLossOutput --Executing P&L Output Procedure for Period 2
+		@FromDate = @FromDate2,
+		@ToDate = @ToDate2,
+		@Gross_Income = @p2gR OUTPUT,
+		@Total_Expenses = @p2tE OUTPUT,
+		@Net_Income = @p2nI OUTPUT
+
+	SELECT @p1gR AS [Period 1 - Gross Income], @p1tE AS [Period 1 - Total Expenses], @p1nI AS [Period 1 - Net Income],
+			@p2gR AS [Period 2 - Gross Income], @p2tE AS [Period 2 - Total Expenses], @p2nI AS [Period 2 - Net Income]
+END;
+}
+```
+---
 ### ***Sales by Job***
+
+
