@@ -344,15 +344,43 @@ For the time being, only some simple Transaction Lists reside in the remaining p
 For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little to no prerequisite skills. 
 
 As before, the notable lack of this data's reportability limited the types of reports available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
+---
 
 
+### ***Power BI***
 
-# ***Power BI***
-
-I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going in to the project.
+I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going into the project.
 
 Aside from the ceaseless learning curve obstacles, persisting mostly of countless Google and YouTube searches with 'How Do I' questions, there was only one major obstacle present in *both* applications. In order to ensure seamless **filtering** capabilities by date or name (customer/vendor), a relationship must be specified between the imported data sources. While this (like so many obstacles before it) seemed simple in concept, it created many strange and unanswered issues in practice.
 
 To make a long story short, this was due to what I learned was the data's **Cardinality**, which has 3 distinct types: One-to-one, one-to-many, or many-to-many. To simplify this, the issue was that any variable selected to create a relationship between the *Sales and Expenses tables*, such as *Date*, might contain duplicates in the opposing table with no correlation between those transactions. This means that all of the QuickBooks data was related through **many-to-many cardinality**.
 
 This particular cardinality creates barriers when slicing or filtering by the variable which holds the relationship. To resolve this, a third table - simply named *Combined* - was imported with all of the existing data aggregated together. Visualizations throughout the dashboard would only reference ***either*** the *Sales* or *Expenses* tables, but use the *Combined* table's **Date** relationship for their filtering purposes.
+
+However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. For Power BI, the languase used is known as **DAX**, which Microsoft defines as:
+
+> "DAX is a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
+
+In this sample, I needed to re-calculate *Gross Revenue* by summing only the items with a 'Type' matching a Sales transaction. This formula is repeated for Expense transaction types, and then the two measures are combined to calculate *Net Income*.
+
+```
+{
+	Gross Revenue = 
+		CALCULATE(SUM('Combined'[Amount]), 'Combined'[Transaction Type] = "Invoice") + 
+		CALCULATE(SUM('Combined'[Amount]), 'Combined'[Transaction Type] = "Sales Receipt") + 
+		CALCULATE(SUM('Combined'[Amount]), 'Combined'[Transaction Type] = "Refund") + 
+		CALCULATE(SUM('Combined'[Amount]), 'Combined'[Transaction Type] = "Credit Memo")
+}
+```
+
+```
+{
+	Net Income = 
+		(('Combined'[Gross Revenue]) - ('Combined'[Total Expenses]))
+}
+```
+---
+
+The capabilities of Power BI's buttons, which can be used to navigate between the various 'pages' of a report, inspired me to create a simple P&L dashboard which can drill down to obtain further details about either Sales or Expenses.
+
+![Rock Castle Construction - Power BI P&L](https://imgur.com/a/FInArDu)
