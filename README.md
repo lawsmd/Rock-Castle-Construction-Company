@@ -427,12 +427,25 @@ I was quite the fan of Tableau's workflow: design one visualization per 'Workhee
 
 My final thoughts on **Tableau** are as follows:
 
--The learning curve is sharply steeper. The excessive requirement of drag-and-drop seems valuable to a veteran user, but is far from intuitive to a beginner like myself.
--Menus are unclear, vaguely labeled, and a little scattered at times.
--I had become spoiled on Power BI's seamless alignment grid-lines. Arranging worksheets free-hand is a nightmare, and there's no chance of making adjacent visualizations of even size. The vertical and horizontal worksheet 'containers' are a nice touch, but I wish they weren't a requirement for symmetry in your finished product.
--Limitations in the free version seem a little unreasonable. I was unable to import from SQL Server, I couldn't export the final product to an image file, and I was made to sign up for a trial account to publish the dashboard publicly.
--Creating data relationships was only available to worksheets that were within the same Excel workbook.
--All of this negativity aside, I finally started to 'feel' the program's depth towards the end of my work. If it were my full-time job to create visualizations, I can see how the drag-and-drop system could make for an extremely efficient workflow.
+- The learning curve is sharply steeper. The excessive requirement of drag-and-drop seems valuable to a veteran user, but is far from intuitive to a beginner like myself.
+- Menus are unclear, vaguely labeled, and a little scattered at times.
+- I had become spoiled on Power BI's seamless alignment grid-lines. Arranging worksheets free-hand is a nightmare, and there's no chance of making adjacent visualizations of even size. The vertical and horizontal worksheet 'containers' are a nice touch, but I wish they weren't a requirement for symmetry in your finished product.
+- Limitations in the free version seem a little unreasonable. I was unable to import from SQL Server, I couldn't export the final product to an image file, and I was made to sign up for a trial account to publish the dashboard publicly.
+- Creating data relationships was only available to worksheets that were within the same Excel workbook.
+- All of this negativity aside, I finally started to 'feel' the program's depth towards the end of my work. If it were my full-time job to create visualizations, I can see how the drag-and-drop system could make for an extremely efficient workflow.
 
 ---
 # **Phase 4: Expand (Coming Soon)**
+
+The goal of this phase is to finally start tearing down some of the project's aforementioned limitations. Furthermore, I'll use this goal to learn what is arguably the most valuable skill-set for my employability: **Python**. I have a fairly complete understanding of C++, so I'm going to find a resource that specializes in teaching Python as a *second language* to ensure an efficient curriculum.
+
+My plan is to develop scripts capable of automatically creating more complex transactions and adding them to SQL Server via the official integration library. Some examples are:
+
+- **Sales Transaction Details**: Using the existing table as a 'parent' source, each Invoice will have its individual line items, each one containing a Product/Service item that can be traced to the *Item List* table to determine which Income category the sale feeds to. I'll also look into recording *Sales Tax* for tracking its liability.
+- **Exepense Transaction Details**: Same concept, except these transactions skip straight to their Expense categories (ledger accounts).
+- **Inventory Management**: Fleshing out the details of *Purchase Orders* to track inventory's *quantity-on-hand*, as well as obtain a detailed breakdown of the *Cost of Goods Sold*.
+- **Reporting Variables**: Any combination of these transactions can be assigned a ***CLass*** or ***Location*** to further increase their reportability. Examples from QuickBooks include Sales Representatives or Pricing Levels as *Classes*, and Departments/Divisions as *Locations* (i.e. Sales by Sales Rep, Expenses by Department, etc.)
+
+---
+
+### Thank you for taking the time to read about this project. Follow the GitHub link at the top of the page to see my work in its entirety.
