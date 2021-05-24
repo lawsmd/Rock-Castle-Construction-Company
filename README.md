@@ -355,7 +355,7 @@ To make a long story short, this was due to what I learned was the data's **Card
 
 This particular cardinality creates barriers when slicing or filtering by the variable which holds the relationship. To resolve this, a third table - simply named *Combined* - was imported with all of the existing data aggregated together. Visualizations throughout the dashboard would only reference ***either*** the *Sales* or *Expenses* tables, but use the *Combined* table's **Date** relationship for their filtering purposes.
 
-However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. For Power BI, the languase used is **DAX**, which Microsoft defines as:
+However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. Power BI uses **DAX**, which Microsoft defines as:
 
 > "a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
 
@@ -399,9 +399,9 @@ My final thoughts on **Power BI** are as follows:
 ---
 ### ***Tableau***
 
-Any preconceived notions that I had about BI solutions being different flavors of the same scoop were peeled away with Tableau. At first glance, the only remotely similar function was the menu for managing imported data. Unfortunately, the free version ('Tableau Public') had extremely limited import options compared to its paid or enterprise alternatives. Since SQL Server was off the table, I simply exported the transactions lists (including *Combined*, for the same reason as before) into Excel and pulled them into Tableau from there.
+Any preconceived notions that I had about BI solutions being different flavors of the same scoop were melted away by Tableau. At first glance, the only remotely similar function was the menu for managing imported data. Unfortunately, the free version ('Tableau Public') had extremely limited import options compared to its paid or enterprise alternatives. Since SQL Server was off the table, I simply exported the transactions lists (including *Combined*, for the same reason as before) into Excel and pulled them into Tableau from there.
 
-As opposed to *DAC*, Tableau uses its own proprietary language for added data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions repsectively, then SUM the two measures to calculate *Net Income*.
+As opposed to *DAX*, Tableau uses its own proprietary language for additional data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions repsectively, then SUM the two measures to calculate *Net Income*.
 
 
 ```
@@ -422,3 +422,17 @@ As opposed to *DAC*, Tableau uses its own proprietary language for added data ma
 I was quite the fan of Tableau's workflow: design one visualization per 'Workheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quick conveyance. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
 
 ![Rock Castle Construction - Tableau P&L](https://i.imgur.com/WF8dZDs.png)
+
+---
+
+My final thoughts on **Tableau** are as follows:
+
+-The learning curve is sharply steeper. The excessive requirement of drag-and-drop seems valuable to a veteran user, but is far from intuitive to a beginner like myself.
+-Menus are unclear, vaguely labeled, and a little scattered at times.
+-I had become spoiled on Power BI's seamless alignment grid-lines. Arranging worksheets free-hand is a nightmare, and there's no chance of making adjacent visualizations of even size. The vertical and horizontal worksheet 'containers' are a nice touch, but I wish they weren't a requirement for symmetry in your finished product.
+-Limitations in the free version seem a little unreasonable. I was unable to import from SQL Server, I couldn't export the final product to an image file, and I was made to sign up for a trial account to publish the dashboard publicly.
+-Creating data relationships was only available to worksheets that were within the same Excel workbook.
+-All of this negativity aside, I finally started to 'feel' the program's depth towards the end of my work. If it were my full-time job to create visualizations, I can see how the drag-and-drop system could make for an extremely efficient workflow.
+
+---
+# **Phase 4: Expand (Coming Soon)**
