@@ -151,7 +151,7 @@ With that output available, I needed only to declare 6 variables to receive it (
 {
 BEGIN
 	--Declaring variables to receive output from P&L Output Procedure
-	DECLARE @p1gR FLOAT --'Period 1, Gross Income' and so on...
+	DECLARE @p1gR FLOAT --'Period 1, Gross Revenue' and so on...
 	DECLARE @p1tE FLOAT
 	DECLARE @p1nI FLOAT
 	DECLARE @p2gR FLOAT
@@ -183,7 +183,7 @@ END;
 
 One of the biggest consequences to the 'no changes' approach of importing QuickBooks data was the format in which Customers and Jobs were received. By default, it was 'Customer:Job', without any spaces. While Excel could have made quick work of this with *Find and Replace*, I still foresaw lots of those aforementioned pitfalls down the road. 
 
-Since all sales transactions were assigned to Jobs and never the base entity ('Customer' vs. 'Customer:Job'), I started with *Sales by Job* since I assumed it would be easier. As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both unioned tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
+Since all sales transactions were assigned to Jobs and never the base entity ('Customer' vs. 'Customer:Job'), I started with *Sales by Job* since I assumed it would be easier. As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both joined tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
 
 ```
 {
@@ -234,7 +234,7 @@ END;
 ---
 ### ***Expenses by Vendor***
 
-Nothing new here. The FROM statement sub-query can hold as many unioned tables as is needed, assuming they are the same format.
+Nothing new here. The FROM statement sub-query can hold as many joined tables as is needed, assuming they are the same format.
 
 ```
 {
@@ -267,7 +267,7 @@ Nothing new here. The FROM statement sub-query can hold as many unioned tables a
 
 The Aging report was another that seemed simple in concept, but turned out particularly challenging. I felt certain that sub-queries were necessary to group any Invoices with an open balance into the standard 30-60-90 day periods. However, this created the same issue as the Sales reports: you can't always **GROUP BY** with sub-query results. Instead, the **CASE** function could be used within a **SUM** to collect values '**WHEN**' the Due Date fell in a certain range.
 
-The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivabble and Payable Aging* reports, the best option turned out to be '2027-01-01' - a coincidence which almost guarantees that QuickBooks Developers entered the sample data around that date. Converting these procedures to use the current date is as simple as swapping out a single parameter.
+The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivable and Payable Aging* reports, the best option turned out to be '2027-01-01' - a coincidence which almost guarantees that QuickBooks Developers entered the sample data around that date. Converting these procedures to use the current date is as simple as swapping out a single parameter.
 
 ```
 {
@@ -337,4 +337,22 @@ END;
 
 For the time being, only some simple Transaction Lists reside in the remaining procedures. They aren't worth discussing, as they were simply a large collection of various UNION statements. I wrote these while working on visualizations in *Phase 3* after gaining a better understanding of how Power BI and Tableau utilize data.
 
+
+
 # **Phase 3: Visualize**
+
+For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little to no prerequisite skills. 
+
+As before, the notable lack of this data's reportability limited the types of reports available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
+
+
+
+# ***Power BI***
+
+I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going in to the project.
+
+Aside from the ceaseless learning curve obstacles, persisting mostly of countless Google and YouTube searches with 'How Do I' questions, there was only one major obstacle present in *both* applications. In order to ensure seamless **filtering** capabilities by date or name (customer/vendor), a relationship must be specified between the imported data sources. While this (like so many obstacles before it) seemed simple in concept, it created many strange and unanswered issues in practice.
+
+To make a long story short, this was due to what I learned was the data's **Cardinality**, which has 3 distinct types: One-to-one, one-to-many, or many-to-many. To simplify this, the issue was that any variable selected to create a relationship between the *Sales and Expenses tables*, such as *Date*, might contain duplicates in the opposing table with no correlation between those transactions. This means that all of the QuickBooks data was related through **many-to-many cardinality**.
+
+This particular cardinality creates barriers when slicing or filtering by the variable which holds the relationship. To resolve this, a third table - simply named *Combined* - was imported with all of the existing data aggregated together. Visualizations throughout the dashboard would only reference ***either*** the *Sales* or *Expenses* tables, but use the *Combined* table's **Date** relationship for their filtering purposes.
