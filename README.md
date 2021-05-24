@@ -346,7 +346,6 @@ For this phase, I'll be sharing an overview of the interactive dashboards I crea
 As before, the notable lack of this data's reportability limited the types of reports available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
 ---
 
-
 ### ***Power BI***
 
 I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going into the project.
@@ -357,7 +356,7 @@ To make a long story short, this was due to what I learned was the data's **Card
 
 This particular cardinality creates barriers when slicing or filtering by the variable which holds the relationship. To resolve this, a third table - simply named *Combined* - was imported with all of the existing data aggregated together. Visualizations throughout the dashboard would only reference ***either*** the *Sales* or *Expenses* tables, but use the *Combined* table's **Date** relationship for their filtering purposes.
 
-However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. For Power BI, the languase used is known as **DAX**, which Microsoft defines as:
+However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. For Power BI, the languase used is **DAX**, which Microsoft defines as:
 
 > "DAX is a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
 
@@ -383,4 +382,4 @@ In this sample, I needed to re-calculate *Gross Revenue* by summing only the ite
 
 The capabilities of Power BI's buttons, which can be used to navigate between the various 'pages' of a report, inspired me to create a simple P&L dashboard which can drill down to obtain further details about either Sales or Expenses.
 
-![Rock Castle Construction - Power BI P&L](https://imgur.com/a/FInArDu)
+![Rock Castle Construction - Power BI P&L](https://i.imgur.com/eDn4TAJ.png)
