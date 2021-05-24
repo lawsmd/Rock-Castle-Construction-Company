@@ -344,8 +344,8 @@ For the time being, only some simple Transaction Lists reside in the remaining p
 For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little to no prerequisite skills. 
 
 As before, the notable lack of this data's reportability limited the types of reports available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
----
 
+---
 ### ***Power BI***
 
 I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going into the project.
@@ -380,6 +380,10 @@ In this sample, I needed to re-calculate *Gross Revenue* by summing only the ite
 ```
 ---
 
-The capabilities of Power BI's buttons, which can be used to navigate between the various 'pages' of a report, inspired me to create a simple P&L dashboard which can drill down to obtain further details about either Sales or Expenses.
+The capabilities of Power BI's buttons, which can be used to navigate between the various 'pages' of a report, inspired me to create a simple P&L dashboard which can drill down to obtain further details about either Sales or Expenses. [Here's a public link to the interactive dashboard.](https://app.powerbi.com/groups/d5a31c77-3fc7-41ae-a57b-34910c8d3a83/reports/715d1880-b34d-475f-8e68-55aca5bc8399/ReportSection)
 
 ![Rock Castle Construction - Power BI P&L](https://i.imgur.com/eDn4TAJ.png)
+
+![Rock Castle Construction - Power BI Sales](https://i.imgur.com/6J0vJTf.png)
+
+![Rock Castle Construction - Power BI Expenses](https://i.imgur.com/n2Vahw3.png)
