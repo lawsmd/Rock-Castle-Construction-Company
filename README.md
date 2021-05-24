@@ -42,7 +42,7 @@ For each of these queries, I'll discuss only the inputs, outputs, and respective
 
 Those familiar with a typical *Profit and Loss* report might have already been concerned about the lack of a relationship between the sales transactions and their income categories. Until I can expand the data and create that relationship, the P&L is limited to the totals of Revenue transactions, Expense transactions, and their difference stated as 'Net Income'. For every report where it is helpful, there are 'From' and 'To' date parameters accepted as input variables.
   
-The first obstacle arose when totaling Revenue and Expenses, which involved 8 different transaction types combined into two aliases with 4 SUM statements each. However, calculating Net Income using those aliases isn't possible within the same SELECT statement. For this, a **Common Table Expression** was used. This function creates a temporary result table which can be referenced only within the immediately proceeding statement.
+The first obstacle arose when totaling Revenue and Expenses, which involved 8 different transaction types combined into two aliases with 4 SUM statements each. However, calculating Net Income using those aliases isn't possible within the same SELECT statement. For this, a **Common Table Expression** was used. This function creates a temporary result table which can only be referenced in the immediately following statement.
 
 ```
 {
@@ -64,7 +64,7 @@ WITH Totals AS --CTE (Common Table Expression) so that each sub-query's alias ca
 }
 ```
 
-Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be resued for the final et calculation, it's still much simpler than adding the SUM of 8 sub-queries.
+Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be reused for the final net calculation, it's still much simpler than adding the SUM of 8 sub-queries.
 
 ---
 ### ***Profit and Loss By Customer***
@@ -401,10 +401,11 @@ My final thoughts on **Power BI** are as follows:
 
 Any preconceived notions that I had about BI solutions being different flavors of the same scoop were melted away by Tableau. At first glance, the only remotely similar function was the menu for managing imported data. Unfortunately, the free version ('Tableau Public') had extremely limited import options compared to its paid or enterprise alternatives. Since SQL Server was off the table, I simply exported the transactions lists (including *Combined*, for the same reason as before) into Excel and pulled them into Tableau from there.
 
-As opposed to *DAX*, Tableau uses its own proprietary language for additional data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions repsectively, then SUM the two measures to calculate *Net Income*.
+As opposed to *DAX*, Tableau uses its own proprietary language for additional data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions respectively, then SUM the two measures to calculate *Net Income*.
 
 
-`
+```
+{
 	SUM( 
     		IF[Type] = "Invoice"
    		OR [Type] = "Sales Receipt"
@@ -413,11 +414,12 @@ As opposed to *DAX*, Tableau uses its own proprietary language for additional da
     		THEN [Amount] 
 		END
 	)
-`
+}
+```
 
 ---
 
-I was quite the fan of Tableau's workflow: design one visualization per 'Workheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quick conveyance. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
+I was quite the fan of Tableau's workflow: design one visualization per 'Worksheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quick conveyance. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
 
 ![Rock Castle Construction - Tableau P&L](https://i.imgur.com/WF8dZDs.png)
 
@@ -435,12 +437,12 @@ My final thoughts on **Tableau** are as follows:
 ---
 # **Phase 4: Expand (Coming Soon)**
 
-The goal of this phase is to finally start tearing down some of the project's aforementioned limitations. Furthermore, I'll use this goal to learn what is arguably the most valuable skill-set for my employability: **Python**. I have a fairly complete understanding of C++, so I'm going to find a resource that specializes in teaching Python as a *second language* to ensure an efficient curriculum.
+The goal of this phase is to finally start tearing down some of the project's aforementioned limitations. Furthermore, I'll use this goal as motivation to learn the most valuable skill-set to my employability: **Python**. I have a fairly complete understanding of C++, so I'm going to find a resource that specializes in teaching Python as a *second language* to ensure an efficient curriculum.
 
 My plan is to develop scripts capable of automatically creating more complex transactions and adding them to SQL Server via the official integration library. Some examples are:
 
 - **Sales Transaction Details**: Using the existing table as a 'parent' source, each Invoice will have its individual line items, each one containing a Product/Service item that can be traced to the *Item List* table to determine which Income category the sale feeds to. I'll also look into recording *Sales Tax* for tracking its liability.
-- **Exepense Transaction Details**: Same concept, except these transactions skip straight to their Expense categories (ledger accounts).
+- **Expense Transaction Details**: Same concept, except these transactions skip straight to their Expense categories (ledger accounts).
 - **Inventory Management**: Fleshing out the details of *Purchase Orders* to track inventory's *quantity-on-hand*, as well as obtain a detailed breakdown of the *Cost of Goods Sold*.
 - **Reporting Variables**: Any combination of these transactions can be assigned a **Class** or **Location** to further increase their reportability. Examples from QuickBooks include Sales Representatives or Pricing Levels as *Classes*, and Departments or Divisions as *Locations* (i.e. Sales by Sales Rep, Expenses by Department, etc.)
 
