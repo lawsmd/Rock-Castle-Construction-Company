@@ -441,7 +441,7 @@ The goal of this phase is to finally start tearing down some of the project's af
 
 My plan is to develop scripts capable of automatically creating more complex transactions and adding them to SQL Server via the official integration library. Some examples are:
 
-- **Sales Transaction Details**: Using the existing table as a 'parent' source, each Invoice will have its individual line items, each one containing a Product/Service item that can be traced to the *Item List* table to determine which Income category the sale feeds to. I'll also look into recording *Sales Tax* for tracking its liability.
+- **Sales Transaction Details**: Using the existing table as a 'parent' source, each Invoice will have its individual line items, containing a Product/Service item that can be traced to the *Item List* table to determine which Income category the sale feeds to. I'll also look into recording *Sales Tax* for tracking its liability.
 - **Expense Transaction Details**: Same concept, except these transactions skip straight to their Expense categories (ledger accounts).
 - **Inventory Management**: Fleshing out the details of *Purchase Orders* to track inventory's *quantity-on-hand*, as well as obtain a detailed breakdown of the *Cost of Goods Sold*.
 - **Reporting Variables**: Any combination of these transactions can be assigned a **Class** or **Location** to further increase their reportability. Examples from QuickBooks include Sales Representatives or Pricing Levels as *Classes*, and Departments or Divisions as *Locations* (i.e. Sales by Sales Rep, Expenses by Department, etc.)
