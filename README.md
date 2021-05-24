@@ -337,8 +337,7 @@ END;
 
 For the time being, only some simple Transaction Lists reside in the remaining procedures. They aren't worth discussing, as they were simply a large collection of various UNION statements. I wrote these while working on visualizations in *Phase 3* after gaining a better understanding of how Power BI and Tableau utilize data.
 
-
-
+---
 # **Phase 3: Visualize**
 
 For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little to no prerequisite skills. 
@@ -358,7 +357,7 @@ This particular cardinality creates barriers when slicing or filtering by the va
 
 However, as a result, any visualization which used Sales ***and*** Expenses together (i.e. *Profit and Loss*) would need special input filtering via programming code. For Power BI, the languase used is **DAX**, which Microsoft defines as:
 
-> "DAX is a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
+> "a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
 
 In this sample, I needed to re-calculate *Gross Revenue* by summing only the items with a 'Type' matching a Sales transaction. This formula is repeated for Expense transaction types, and then the two measures are combined to calculate *Net Income*.
 
@@ -387,3 +386,39 @@ The capabilities of Power BI's buttons, which can be used to navigate between th
 ![Rock Castle Construction - Power BI Sales](https://i.imgur.com/6J0vJTf.png)
 
 ![Rock Castle Construction - Power BI Expenses](https://i.imgur.com/n2Vahw3.png)
+
+---
+
+My final thoughts on **Power BI** are as follows:
+
+- At face value, this is the kind of curated experience I would expect from Microsoft. Finding a new function or preference was made easy by the carefully arranged interface, and each setting was properly labeled.
+- I was bit surprised to find a *lack* of customizations compared to what I'm accustomed to in Excel. Something like giving the bars in your graph an outline to accentuate them against their background might seem trivial to the analysis at hand, but this application isn't marketed as a limited solution for the average consumer.
+- Despite the studying needed regarding *Cardinality*, the process of importing, creating relationships between, and utilizing data was shockingly simple and intuitive.
+- The public or community-based resources for learning the application or circumnavigating issues are both abundant and helpful.
+
+---
+### ***Tableau***
+
+Any preconceived notions that I had about BI solutions being different flavors of the same scoop were peeled away with Tableau. At first glance, the only remotely similar function was the menu for managing imported data. Unfortunately, the free version ('Tableau Public') had extremely limited import options compared to its paid or enterprise alternatives. Since SQL Server was off the table, I simply exported the transactions lists (including *Combined*, for the same reason as before) into Excel and pulled them into Tableau from there.
+
+As opposed to *DAC*, Tableau uses its own proprietary language for added data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions repsectively, then SUM the two measures to calculate *Net Income*.
+
+
+```
+{
+	SUM( 
+    		IF[Type] = "Invoice"
+   		OR [Type] = "Sales Receipt"
+    		OR [Type] = "Refund"
+   		OR [Type] = "Credit Memo"
+    		THEN [Amount] 
+		END
+	)
+}
+```
+
+---
+
+I was quite the fan of Tableau's workflow: design one visualization per 'Workheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quick conveyance. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
+
+![Rock Castle Construction - Tableau P&L](https://i.imgur.com/WF8dZDs.png)
