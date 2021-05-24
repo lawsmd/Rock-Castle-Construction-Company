@@ -404,8 +404,7 @@ Any preconceived notions that I had about BI solutions being different flavors o
 As opposed to *DAX*, Tableau uses its own proprietary language for additional data manipulation. The code needed to parse the **Combined** table here was a bit harder to learn, but easier to understand. Same idea as before: SUM the Sales and Expense transactions repsectively, then SUM the two measures to calculate *Net Income*.
 
 
-```
-{
+`
 	SUM( 
     		IF[Type] = "Invoice"
    		OR [Type] = "Sales Receipt"
@@ -414,8 +413,7 @@ As opposed to *DAX*, Tableau uses its own proprietary language for additional da
     		THEN [Amount] 
 		END
 	)
-}
-```
+`
 
 ---
 
@@ -444,7 +442,7 @@ My plan is to develop scripts capable of automatically creating more complex tra
 - **Sales Transaction Details**: Using the existing table as a 'parent' source, each Invoice will have its individual line items, each one containing a Product/Service item that can be traced to the *Item List* table to determine which Income category the sale feeds to. I'll also look into recording *Sales Tax* for tracking its liability.
 - **Exepense Transaction Details**: Same concept, except these transactions skip straight to their Expense categories (ledger accounts).
 - **Inventory Management**: Fleshing out the details of *Purchase Orders* to track inventory's *quantity-on-hand*, as well as obtain a detailed breakdown of the *Cost of Goods Sold*.
-- **Reporting Variables**: Any combination of these transactions can be assigned a ***CLass*** or ***Location*** to further increase their reportability. Examples from QuickBooks include Sales Representatives or Pricing Levels as *Classes*, and Departments/Divisions as *Locations* (i.e. Sales by Sales Rep, Expenses by Department, etc.)
+- **Reporting Variables**: Any combination of these transactions can be assigned a **Class** or **Location** to further increase their reportability. Examples from QuickBooks include Sales Representatives or Pricing Levels as *Classes*, and Departments or Divisions as *Locations* (i.e. Sales by Sales Rep, Expenses by Department, etc.)
 
 ---
 
