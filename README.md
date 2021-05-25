@@ -9,7 +9,7 @@ The purpose of this project is not to resolve a specific problem, but to create 
 
 
 
-As of writing this, I have finished *Phase 3* and intend to publish the project before beginning the long and arduous process of learning Python. While there have been many hurdles along the way, often taking the form of inadequate data or steep learning curves to the respective software, I am overwhelmingly thrilled about the experience I've gained. For a time it seemed like every single query or visualization required a new syntax or methodology I had yet to learn. Still, these are vastly complex systems and I have been working with relatively simple data, so I recognize the need for continued persistence in my practice.
+As of writing this, I have finished *Phase 3* and intend to publish the project before beginning the long and arduous process of learning Python. While there have been many hurdles along the way, often taking the form of inadequate data or steep learning curves to the respective software, I am overwhelmingly thrilled about the experience I've gained. For a time it seemed like every single query or visualization required a new syntax or methodology I had yet to learn. Still, these are vastly complex systems and I've been working with relatively simple data, so I recognize the need for continued persistence in my practice.
 
 
 
