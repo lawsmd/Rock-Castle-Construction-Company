@@ -30,6 +30,8 @@ For example, the Invoice list provided only a name, date, and amount. Without th
 
 **Though I came close to giving up in frustration, instead I chose to re-download everything and start from scratch. This time, I'd import every list into SQL Server *exactly* as it came, without adding even a single column. If the project was going to be a challenge, I'd rather the challenge be in querying subpar data - not writing needlessly complex Excel formulas.**
 
+![Rock Castle Construction - Database Schema](https://i.imgur.com/jlYCDDj.png)
+
 
 
 # **Phase 2: Query**
@@ -42,7 +44,7 @@ For each of these queries, I'll discuss only the inputs, outputs, and respective
 
 Those familiar with a typical *Profit and Loss* report might have already been concerned about the lack of a relationship between the sales transactions and their income categories. Until I can expand the data and create that relationship, the P&L is limited to the totals of Revenue transactions, Expense transactions, and their difference stated as 'Net Income'. For every report where it is helpful, there are 'From' and 'To' date parameters accepted as input variables.
   
-The first obstacle arose when totaling Revenue and Expenses, which involved 8 different transaction types combined into two aliases with 4 SUM statements each. However, calculating Net Income using those aliases isn't possible within the same SELECT statement. For this, a **Common Table Expression** was used. This function creates a temporary result table which can only be referenced in the immediately following statement.
+The first obstacle arose when totaling *Revenue* and *Expenses*, which involved 8 different transaction types combined into two aliases with 4 SUM statements each. However, calculating *Net Income* using those aliases isn't possible within the same **SELECT** statement. For this, a **Common Table Expression** was used. This function creates a temporary result table which can only be referenced in the immediately following statement.
 
 ```
 {
@@ -64,12 +66,12 @@ WITH Totals AS --CTE (Common Table Expression) so that each sub-query's alias ca
 }
 ```
 
-Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be reused for the final net calculation, it's still much simpler than adding the SUM of 8 sub-queries.
+Thanks to this, I could calculate total Revenue and Expenses using simple arithmetic around the aliases. While these new totaled aliases could not be reused for the final net calculation, it's still much simpler than adding the SUM of 8 long, repeated sub-queries.
 
 ---
 ### ***Profit and Loss By Customer***
 
-Not much changes here, only an input customer parameter searched for in each transaction list using the LIKE statement. As with many of these reports, their current usefulness is limited until data expansion. Even though it is quite capable of it, and a frequently used feature at that, QuickBooks did not have any Expenses tied to their Customers/Jobs - only Vendors. Therefore, each customer carries only Revenue at present time.
+Not many changes here, only an input customer parameter searched for in each transaction list using the **LIKE** statement. As with many of these reports, their current usefulness is limited until data expansion. Even though it is quite capable of it, and a frequently used feature at that, QuickBooks did not have any Expenses tied to their Customers/Jobs - only Vendors. Therefore, each customer carries only Revenue at present time.
 
 ```
 {
@@ -103,9 +105,9 @@ This report compares the Profit and Loss of two separate periods. While I could 
 1. Declare the output parameters and their data types.
 2. Declare these parameters as variables within the statement itself.
 3. Calculate the totals into the variables instead of the aliases.
-4. SET the output parameters equal to those variables.
+4. **SET** the output parameters equal to those variables.
 
-Everything else about the P&L stays the same.
+Everything else about the *P&L* stays the same.
 
 ```
 {
@@ -145,7 +147,7 @@ END;
 }
 ```
 
-With that output available, I needed only to declare 6 variables to receive it (3 for each period) and then execute the procedure twice. Then, the entire report is just a SELECT statement aliasing the variables.
+With that output available, I needed only to declare 6 variables to receive it (3 for each period) and then execute the procedure twice. Then, the entire report is just a **SELECT** statement aliasing the variables.
 
 ```
 {
@@ -183,7 +185,7 @@ END;
 
 One of the biggest consequences to the 'no changes' approach of importing QuickBooks data was the format in which Customers and Jobs were received. By default, it was 'Customer:Job', without any spaces. While Excel could have made quick work of this with *Find and Replace*, I still foresaw lots of those aforementioned pitfalls down the road. 
 
-Since all sales transactions were assigned to Jobs and never the base entity ('Customer' vs. 'Customer:Job'), I started with *Sales by Job* since I assumed it would be easier. As it turned out, the GROUP BY statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both joined tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
+Since all sales transactions were assigned to Jobs and never the base entity ('Customer' vs. 'Customer:Job'), I started with *Sales by Job* since I assumed it would be easier. As it turned out, the **GROUP BY** statement is quite limited when aggregrating multiple tables. Since I needed the totals from Invoices **and** Sales Receipts, I had to UNION their tables through a sub-query in the FROM statement. Furthermore, I had to alias the SUMS of both joined tables to be allowed to SUM them in the parent SELECT statement, and then separately alias the entire sub-query to reference it in the proceeding GROUP BY.
 
 ```
 {
@@ -265,7 +267,7 @@ Nothing new here. The FROM statement sub-query can hold as many joined tables as
 ---
 ### ***Accounts Receivable/Payable Aging***
 
-The Aging report was another that seemed simple in concept, but turned out particularly challenging. I felt certain that sub-queries were necessary to group any Invoices with an open balance into the standard 30-60-90 day periods. However, this created the same issue as the Sales reports: you can't always **GROUP BY** with sub-query results. Instead, the **CASE** function could be used within a **SUM** to collect values '**WHEN**' the Due Date fell in a certain range.
+The Aging report was another that seemed simple in concept, but turned out particularly challenging. I felt certain that sub-queries were necessary to group any Invoices with an open balance into the standard 30-60-90 day periods. However, this created the same issue as the Sales reports: you can't **GROUP BY** the results of a sub-query with more than one argument. Instead, the **CASE** function could be used within a **SUM** to collect values '**WHEN**' the Due Date fell in a certain range.
 
 The original dataset was primarily dated between 2023 and 2027 - I assume this was to remove the need for constantly updating a sample company. Since today's date (via **GETDATE()**) wouldn't yield any overdue transactions, it was necessary to **DATEADD()** to an arbitrarily chosen date. For both the *Receivable and Payable Aging* reports, the best option turned out to be '2027-01-01' - a coincidence which almost guarantees that QuickBooks Developers entered the sample data around that date. Converting these procedures to use the current date is as simple as swapping out a single parameter.
 
@@ -340,18 +342,18 @@ For the time being, only some simple Transaction Lists reside in the remaining p
 ---
 # **Phase 3: Visualize**
 
-For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little to no prerequisite skills. 
+For this phase, I'll be sharing an overview of the interactive dashboards I created in either product, as well as links to their respective host's websites. I'll also be providing a brief comparison of the two in terms of learning curve, usability, flexibility, and depth. While my MySQL experience gave me a huge lead on learning SQL Server, I had no prior visualization exposure outside of trivial Excel charting. Thankfully, solutions like Power BI and Tableau require little-to-no prerequisite skills. 
 
-As before, the notable lack of this data's reportability limited the types of reports available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
+As before, the notable lack of this data's reportability limited the types of visualizations available for providing valuable analysis. However, this did not prevent me from learning the core concepts necessary to understanding a typical workflow in either solution. For example, **Expenses** reported by 'Transaction Type' (Bill, Check, Credit Card Charge) might seem irrelevant to decreasing a business's costs - but replacing that visual's 'Transaction Type' axis with something more valuable, like *Expense Categories* (Fuel, Insurance, COGS), requires no more than a couple clicks.
 
 ---
 ### ***Power BI***
 
 I started with Power BI because it was, in my experience, the outright industry leader in business intelligence visualization software. Seeing as how Microsoft played the lead role in both of the previous phases (Excel and SQL Server), this solution held my clear preference and interest going into the project.
 
-Aside from the ceaseless learning curve obstacles, persisting mostly of countless Google and YouTube searches with 'How Do I' questions, there was only one major obstacle present in *both* applications. In order to ensure seamless **filtering** capabilities by date or name (customer/vendor), a relationship must be specified between the imported data sources. While this (like so many obstacles before it) seemed simple in concept, it created many strange and unanswered issues in practice.
+Aside from the ceaseless learning curve obstacles (persisting mostly of countless Google and YouTube searches with 'How Do I' questions) there was only one major obstacle present in *both* applications. In order to ensure seamless **filtering** capabilities by date or name (customer/vendor), a relationship must be specified between the imported data sources. While this (like so many obstacles before it) seemed simple in concept, it created many strange and unanswered issues in practice.
 
-To make a long story short, this was due to what I learned was the data's **Cardinality**, which has 3 distinct types: One-to-one, one-to-many, or many-to-many. To simplify this, the issue was that any variable selected to create a relationship between the *Sales and Expenses tables*, such as *Date*, might contain duplicates in the opposing table with no correlation between those transactions. This means that all of the QuickBooks data was related through **many-to-many cardinality**.
+To make a long story short, this was due to what I learned was the data's **Cardinality**, which has 3 distinct types: one-to-one, one-to-many, or many-to-many. To simplify this, the issue was that any variable selected to create a relationship between the *Sales and Expenses tables*, such as *Date*, might contain duplicates in the opposing table with no correlation between those transactions. This means that all of the QuickBooks data was related through **many-to-many cardinality**.
 
 This particular cardinality creates barriers when slicing or filtering by the variable which holds the relationship. To resolve this, a third table - simply named *Combined* - was imported with all of the existing data aggregated together. Visualizations throughout the dashboard would only reference ***either*** the *Sales* or *Expenses* tables, but use the *Combined* table's **Date** relationship for their filtering purposes.
 
@@ -359,7 +361,7 @@ However, as a result, any visualization which used Sales ***and*** Expenses toge
 
 > "a collection of functions, operators, and constants that can be used in a formula, or expression, to calculate and return one or more values. Stated more simply, DAX helps you create new information from data already in your model."
 
-In this sample, I needed to re-calculate *Gross Revenue* by summing only the items with a 'Type' matching a Sales transaction. This formula is repeated for Expense transaction types, and then the two measures are combined to calculate *Net Income*.
+In this sample, I needed to re-calculate *Gross Revenue* by summing only the items with a Sales transaction 'Type'. This formula is repeated for Expense transaction types, and then the two measures are combined to calculate *Net Income*.
 
 ```
 {
@@ -419,7 +421,7 @@ As opposed to *DAX*, Tableau uses its own proprietary language for additional da
 
 ---
 
-I was quite the fan of Tableau's workflow: design one visualization per 'Worksheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quick conveyance. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
+I was quite the fan of Tableau's workflow: design one visualization per 'Worksheet', then pick-and-choose worksheets to create a dashboard. This time I went for an all-in-one report - a little less depth for the convenience of quickly communicating the analysis. [Here's a public link to the interactive dashboard.](https://public.tableau.com/profile/michael.laws5772#!/vizhome/RockCastleConstruction/ProfitandLoss)
 
 ![Rock Castle Construction - Tableau P&L](https://i.imgur.com/WF8dZDs.png)
 
@@ -428,8 +430,8 @@ I was quite the fan of Tableau's workflow: design one visualization per 'Workshe
 My final thoughts on **Tableau** are as follows:
 
 - The learning curve is sharply steeper. The excessive requirement of drag-and-drop seems valuable to a veteran user, but is far from intuitive to a beginner like myself.
-- Menus are unclear, vaguely labeled, and a little scattered at times.
-- I had become spoiled on Power BI's seamless alignment grid-lines. Arranging worksheets free-hand is a nightmare, and there's no chance of making adjacent visualizations of even size. The vertical and horizontal worksheet 'containers' are a nice touch, but I wish they weren't a requirement for symmetry in your finished product.
+- Menus felt a little unclear, vaguely labeled, and a bit scattered at times.
+- I had become spoiled on Power BI's seamless alignment grid-lines. Arranging worksheets free-hand is a nightmare, and there's no chance of making adjacent visualizations of even size. The vertical and horizontal worksheet 'containers' are a nice touch, but I wish they weren't a requirement for symmetry in the finished product.
 - Limitations in the free version seem a little unreasonable. I was unable to import from SQL Server, I couldn't export the final product to an image file, and I was made to sign up for a trial account to publish the dashboard publicly.
 - Creating data relationships was only available to worksheets that were within the same Excel workbook.
 - All of this negativity aside, I finally started to 'feel' the program's depth towards the end of my work. If it were my full-time job to create visualizations, I can see how the drag-and-drop system could make for an extremely efficient workflow.
