@@ -32,7 +32,7 @@ For example, the Invoice list provided only a name, date, and amount. Without th
 
 ![Rock Castle Construction - Database Schema](https://i.imgur.com/jlYCDDj.png)
 
-
+---
 
 # **Phase 2: Query**
 
